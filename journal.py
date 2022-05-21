@@ -5,13 +5,13 @@ import questionary
 from questionary import prompt
 from pyfiglet import Figlet
 from plumbum import colors
+from plumbum.cmd import git
 import yaml, ruamel.yaml
 
-with open("config.yaml", "r") as yamlfile:
+with open("config.yml", "r") as yamlfile:
     data = yaml.safe_load(yamlfile)
 author = data['author']
 path = data['path']
-
 #(1) buy the journal
 def create_journal():
     #prompt user to name journal
@@ -19,12 +19,12 @@ def create_journal():
     author = ruamel.yaml.scalarstring.DoubleQuotedScalarString(questionary.text("What is your name?").ask())
     
     #find the place to save the journal
-    path = ruamel.yaml.scalarstring.DoubleQuotedScalarString(questionary.text("What is the absolute path of your journal?").ask())
+    path = ruamel.yaml.scalarstring.DoubleQuotedScalarString(questionary.text("What is the name of your journal?").ask())
 
     my_dict = dict(author=author, path=path)
     yaml = ruamel.yaml.YAML()
 
-    with open('data.yml', 'w') as outfile:
+    with open('config.yml', 'w') as outfile:
         yaml.dump(my_dict, outfile)
 
     #making the directory
@@ -35,11 +35,18 @@ def create_journal():
     else:
         print(f"Successfully created {author}'s journal at {path}")
 
+    os.chdir(path)
+    add_page()
+
 def add_content(title):
+    timestamp = str(datetime.now())
     with open(title, 'a') as entry:
         writing = questionary.text("What are you grateful for?").ask()
         prettier_writing = textwrap.fill(writing) + "\n"
         entry.write(prettier_writing)
+    git('add', title)
+    git('commit', '-m', timestamp + ' make update to daily entry')
+    git('push')
         
 #flip to the right page
 def add_page():
@@ -92,9 +99,10 @@ def main():
         'Quit'
     ]).ask()
     if choice == 'Journal':
-        if path == "": #fix this part later
+        if path == "":
             create_journal()
-        open_journal()
+        else:
+            open_journal()
     elif choice == 'Read Entries':
         read_entries()
     elif choice == 'Quit':
