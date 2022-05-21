@@ -1,4 +1,4 @@
-import os
+import os, fnmatch
 from datetime import datetime
 from pyfiglet import Figlet
 from plumbum import colors, cli 
@@ -64,6 +64,21 @@ def add_page():
     print("Created Entry" + entry_name)
     add_content(entry_name)
 
+#open the journal
+def open_journal():
+    today_entry = str(datetime.today().strftime('%Y-%m-%d')) + ".txt"
+
+    os.chdir(path)
+    journal_list = os.listdir()
+
+    #looping through the list of journals to check if there is an entry for today
+    if not journal_list:
+        add_page()
+    for journal in journal_list:
+        if fnmatch.fnmatch(journal, today_entry):
+            add_content(today_entry)
+        else:
+            add_page()
 
 class GJournal(cli.Application):
     VERSION = "0.0"
@@ -83,7 +98,7 @@ class GJournal(cli.Application):
             if path == "":
                 create_journal()
             else:
-                print("open_journal()")
+                open_journal()
         elif choice == 'Read Entries':
             print("read_entries()")
         elif choice == 'Quit':
