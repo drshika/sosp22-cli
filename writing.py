@@ -3,6 +3,7 @@ from datetime import datetime
 from pyfiglet import Figlet
 from plumbum import colors, cli 
 import questionary
+from questionary import prompt
 import yaml, ruamel.yaml
 from plumbum.cmd import git
 import textwrap
@@ -80,6 +81,21 @@ def open_journal():
         else:
             add_page()
 
+# flip through past pages
+def read_entries():
+    os.chdir(path)
+    journal_list = os.listdir()
+
+    question = [{
+        "type": "select",
+        "name": "select_entry",
+        "message": "Choose an entry to read",
+        "choices": journal_list
+    },]
+    entry = prompt(question)['select_entry']
+    with open(entry, 'r') as e:
+        print(e.read())
+
 class GJournal(cli.Application):
     VERSION = "0.0"
 
@@ -100,7 +116,7 @@ class GJournal(cli.Application):
             else:
                 open_journal()
         elif choice == 'Read Entries':
-            print("read_entries()")
+            read_entries()
         elif choice == 'Quit':
             print("Goodbye, have a lovely day!")
 
