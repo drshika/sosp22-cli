@@ -108,4 +108,4 @@ def main():
     elif choice == 'Quit':
         print("Goodbye, have a lovely day!")
 
-if __name__ == "__main__":
+main()
