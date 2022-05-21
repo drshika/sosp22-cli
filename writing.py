@@ -25,6 +25,22 @@ class GJournal(cli.Application):
         global path,author
         load_path_author()
         print_banner("Gratitude Journal")
+        choice = questionary.select(
+        "What would you like to do",
+        choices=[
+            'Journal',
+            'Read Entries',
+            'Quit'
+        ]).ask()
+        if choice == 'Journal':
+            if path == "":
+                print("create_journal()")
+            else:
+                print("open_journal()")
+        elif choice == 'Read Entries':
+            print("read_entries()")
+        elif choice == 'Quit':
+            print("Goodbye, have a lovely day!")
 
 if __name__ == "__main__":
     GJournal()
