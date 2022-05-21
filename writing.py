@@ -17,8 +17,7 @@ def load_path_author():
     author = data['author']
     path = data['path']
 
-def create_journal():
-    #(1) buy the journal
+#(1) buy the journal
 def create_journal():
     #prompt user to name journal
     global author, path
