@@ -1,7 +1,7 @@
 from pyfiglet import Figlet
 from plumbum import colors, cli 
 import questionary
-import yaml
+import yaml, ruamel.yaml
 
 def print_banner(text):
     with colors['LIGHT_SEA_GREEN']:
@@ -16,6 +16,30 @@ def load_path_author():
         data = yaml.safe_load(yamlfile)
     author = data['author']
     path = data['path']
+
+def create_journal():
+    #(1) buy the journal
+def create_journal():
+    #prompt user to name journal
+    global author, path
+    author = ruamel.yaml.scalarstring.DoubleQuotedScalarString(questionary.text("What is your name?").ask())
+    
+    #find the place to save the journal
+    path = ruamel.yaml.scalarstring.DoubleQuotedScalarString(questionary.text("What is the name of your journal?").ask())
+
+    my_dict = dict(author=author, path=path)
+    yaml = ruamel.yaml.YAML()
+
+    with open('config.yml', 'w') as outfile:
+        yaml.dump(my_dict, outfile)
+
+    #making the directory
+    try:
+        os.makedirs(path)
+    except OSError:
+        print(f"Creating the directory {path} has failed.")
+    else:
+        print(f"Successfully created {author}'s journal at {path}")
 
 
 class GJournal(cli.Application):
@@ -34,7 +58,7 @@ class GJournal(cli.Application):
         ]).ask()
         if choice == 'Journal':
             if path == "":
-                print("create_journal()")
+                create_journal()
             else:
                 print("open_journal()")
         elif choice == 'Read Entries':
