@@ -1,7 +1,11 @@
+import os
+from datetime import datetime
 from pyfiglet import Figlet
 from plumbum import colors, cli 
 import questionary
 import yaml, ruamel.yaml
+from plumbum.cmd import git
+import textwrap
 
 def print_banner(text):
     with colors['LIGHT_SEA_GREEN']:
@@ -39,6 +43,9 @@ def create_journal():
         print(f"Creating the directory {path} has failed.")
     else:
         print(f"Successfully created {author}'s journal at {path}")
+
+    os.chdir(path)
+    add_page()
 
 def add_content(title):
     timestamp = str(datetime.now())
