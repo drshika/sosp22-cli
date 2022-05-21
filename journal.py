@@ -4,7 +4,7 @@ import textwrap
 import questionary
 from questionary import prompt
 from pyfiglet import Figlet
-from plumbum import colors
+from plumbum import colors, cli
 from plumbum.cmd import git
 import yaml, ruamel.yaml
 
@@ -107,4 +107,5 @@ def main():
         read_entries()
     elif choice == 'Quit':
         print("Goodbye, have a lovely day!")
-main()
+
+if __name__ == "__main__":
