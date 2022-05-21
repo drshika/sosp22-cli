@@ -40,6 +40,16 @@ def create_journal():
     else:
         print(f"Successfully created {author}'s journal at {path}")
 
+def add_content(title):
+    timestamp = str(datetime.now())
+    with open(title, 'a') as entry:
+        writing = questionary.text("What are you grateful for?").ask()
+        prettier_writing = textwrap.fill(writing) + "\n"
+        entry.write(prettier_writing)
+    git('add', title)
+    git('commit', '-m', timestamp + ' make update to daily entry')
+    git('push')
+
 #flip to the right page
 def add_page():
     entry_name = str(datetime.today().strftime('%Y-%m-%d'))+ ".txt"
