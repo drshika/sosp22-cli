@@ -40,6 +40,13 @@ def create_journal():
     else:
         print(f"Successfully created {author}'s journal at {path}")
 
+#flip to the right page
+def add_page():
+    entry_name = str(datetime.today().strftime('%Y-%m-%d'))+ ".txt"
+    open(entry_name, 'x')
+    print("Created Entry" + entry_name)
+    add_content(entry_name)
+
 
 class GJournal(cli.Application):
     VERSION = "0.0"
