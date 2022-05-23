@@ -30,7 +30,7 @@ def create_journal():
     author = ruamel.yaml.scalarstring.DoubleQuotedScalarString(questionary.text("What is your name?").ask())
     
     #find the place to save the journal
-    path = ruamel.yaml.scalarstring.DoubleQuotedScalarString(questionary.text("What is the name of your journal?").ask())
+    path = author + "-Journal"
 
     my_dict = dict(author=author, path=path)
     yaml = ruamel.yaml.YAML()
