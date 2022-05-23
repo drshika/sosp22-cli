@@ -4,3 +4,4 @@ os
 pyyaml
 pyfiglet
 plumbum
+rich
