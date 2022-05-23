@@ -13,53 +13,58 @@ def print_banner(text):
         print(Figlet(font='slant').renderText(text))
 
 author = ""
-path = ""
-push = False
+journal_name = ""
 
-def load_path_author():
-    global author, path
-    with open("config.yml", "r") as yamlfile:
-        data = yaml.safe_load(yamlfile)
+# loads a journal yaml config file, creating it if missing
+def load_config(filename):
+    global author, journal_name
+    if not os.path.exists(filename):
+        save_config(filename, {
+            "author": '',
+            "journal_name": ''
+        })
+
+    with open(filename, "r") as file:
+        data = yaml.safe_load(file)
     author = data['author']
-    path = data['path']
+    journal_name = data['journal_name']
+
+# save the config to a file
+def save_config(filename, config):
+    yaml = ruamel.yaml.YAML()
+
+    with open(filename, "w") as file:
+            yaml.dump(config, file)
+
+def init_folder(folder_name):
+    #making the directory
+    try:
+        os.makedirs(folder_name)
+    except OSError:
+        print(f"Creating the directory {folder_name} has failed.")
+
+    os.chdir(journal_name)
+    add_page()
 
 #(1) buy the journal
 def create_journal():
     #prompt user to name journal
-    global author, path
+    global author, journal_name
     author = ruamel.yaml.scalarstring.DoubleQuotedScalarString(questionary.text("What is your name?").ask())
     
     #find the place to save the journal
-    path = author + "-Journal"
+    journal_name = ruamel.yaml.scalarstring.DoubleQuotedScalarString(author + "-Journal")
 
-    my_dict = dict(author=author, path=path)
-    yaml = ruamel.yaml.YAML()
+    my_dict = dict(author=author, journal_name=journal_name)
 
-    with open('config.yml', 'w') as outfile:
-        yaml.dump(my_dict, outfile)
-
-    #making the directory
-    try:
-        os.makedirs(path)
-    except OSError:
-        print(f"Creating the directory {path} has failed.")
-    else:
-        print(f"Successfully created {author}'s journal at {path}")
-
-    os.chdir(path)
-    add_page()
+    save_config("config.yml", my_dict)
+    init_folder(journal_name)
 
 def add_content(title):
-    global push
-    timestamp = str(datetime.now())
     with open(title, 'a') as entry:
         writing = questionary.text("What are you grateful for?").ask()
         prettier_writing = textwrap.fill(writing) + "\n"
         entry.write(prettier_writing)
-    if push:
-        git('add', title)
-        git('commit', '-m', timestamp + ' make update to daily entry')
-        git('push')
 
 #flip to the right page
 def add_page():
@@ -70,23 +75,24 @@ def add_page():
 
 #open the journal
 def open_journal():
-    today_entry = str(datetime.today().strftime('%Y-%m-%d')) + ".txt"
+    entry_name = str(datetime.today().strftime('%Y-%m-%d')) + ".txt"
 
-    os.chdir(path)
+    os.chdir(journal_name)
     journal_list = os.listdir()
 
     #looping through the list of journals to check if there is an entry for today
     if not journal_list:
         add_page()
     for journal in journal_list:
-        if fnmatch.fnmatch(journal, today_entry):
-            add_content(today_entry)
+        if fnmatch.fnmatch(journal, entry_name):
+            add_content(entry_name)
         else:
             add_page()
 
 # flip through past pages
 def read_entries():
-    os.chdir(path)
+    global journal_name
+    os.chdir(journal_name)
     journal_list = os.listdir()
 
     question = [{
@@ -100,16 +106,16 @@ def read_entries():
         print(e.read())
 
 class GJournal(cli.Application):
-    global push
     VERSION = "0.0"
 
-    p_opt = cli.Flag(['p', 'push'], help="Commits and pushes the added files as well")
-    push = bool(p_opt)
+    push = cli.Flag(['p', 'push'], help="Commits and pushes the added files as well")
 
     def main(self):
-        global path,author, push
-        load_path_author()
+        global journal_name,author,push
+
+        load_config("config.yml")
         print_banner("Gratitude Journal")
+    
         choice = questionary.select(
         "What would you like to do",
         choices=[
@@ -118,7 +124,7 @@ class GJournal(cli.Application):
             'Quit'
         ]).ask()
         if choice == 'Journal':
-            if path == "":
+            if journal_name == "":
                 create_journal()
             else:
                 open_journal()
@@ -126,6 +132,14 @@ class GJournal(cli.Application):
             read_entries()
         elif choice == 'Quit':
             print("Goodbye, have a lovely day!")
+
+        timestamp = str(datetime.now())
+        entry_name = str(datetime.today().strftime('%Y-%m-%d')) + ".txt"
+
+        if self.push:
+            git('add', entry_name)
+            git('commit', '-m', timestamp + ' make update to daily entry')
+            git('push')
 
 if __name__ == "__main__":
     GJournal()
