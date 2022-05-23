@@ -14,6 +14,7 @@ def print_banner(text):
 
 author = ""
 path = ""
+push = False
 
 def load_path_author():
     global author, path
@@ -49,14 +50,16 @@ def create_journal():
     add_page()
 
 def add_content(title):
+    global push
     timestamp = str(datetime.now())
     with open(title, 'a') as entry:
         writing = questionary.text("What are you grateful for?").ask()
         prettier_writing = textwrap.fill(writing) + "\n"
         entry.write(prettier_writing)
-    git('add', title)
-    git('commit', '-m', timestamp + ' make update to daily entry')
-    git('push')
+    if push:
+        git('add', title)
+        git('commit', '-m', timestamp + ' make update to daily entry')
+        git('push')
 
 #flip to the right page
 def add_page():
@@ -97,10 +100,14 @@ def read_entries():
         print(e.read())
 
 class GJournal(cli.Application):
+    global push
     VERSION = "0.0"
 
+    p_opt = cli.Flag(['p', 'push'], help="Commits and pushes the added files as well")
+    push = bool(p_opt)
+
     def main(self):
-        global path,author
+        global path,author, push
         load_path_author()
         print_banner("Gratitude Journal")
         choice = questionary.select(
