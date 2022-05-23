@@ -4,13 +4,11 @@ Command-line Gratitude Journal with fancy interface features! See the code at `j
 
 ![shows version and help](version_and_help.png)
 
-![has a nice selector for picking files](select_files.png)
+![has a nice selector for picking journal entries to read](select_files.png)
 
 ![shows a progress bar as data is being pushed](push_in_progress.png)
 
-Expanded from a [tutorial workshop](https://125summer.tech/cli) I did in Summer 2021 as part of UIUC Summer of Side Projects.
-
-Note that this is an example project to demonstrate the wide variety of command-line interface building libraries that python has available. Of course, an actual client will account for more edge cases and a more extensive feature set.
+Expanded from a [tutorial workshop](https://125summer.tech/cli) that a friend did as part of UIUC Summer of Side Projects.
 
 ## Libraries demonstrated
 
@@ -28,7 +26,7 @@ Most of what's being done here with excellent Python libraries:
 
 [plumbum](https://plumbum.readthedocs.io/en/latest/) does a lot of the heavy lifting in many python command-line based applications. 
 
-With `plumbum.cmd`, we can import bash scripts and call them as python functions. For example, here, we're using it to call `ls` to get the list of current files and `git` to execute our commands on it.
+With `plumbum.cmd`, we can import bash scripts and call them as python functions. For example, here, we're using it to call `chdir` to change directories and `git` to execute our commands on it.
 
 The `cli` module from `plumbum` also lets us use a nice class-based syntax to set a version number, flags, and help text that wrap around our script. This allows us to focus on the content of the program itself.
 
@@ -60,7 +58,7 @@ After cloning the repository
 Use `python3` to just run it once the dependencies are set up. 
 
 ```bash
-$ python fgit.py [OPTIONS]
+$ python journal.py [OPTIONS]
 ```
 
 If you like, you can make it an executable, add it to your path and indicate the language with a #! hash-bang to make the initial start command smaller.*
