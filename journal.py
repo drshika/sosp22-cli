@@ -150,9 +150,9 @@ class GJournal(cli.Application):
         entry_name = str(datetime.today().strftime('%Y-%m-%d')) + ".txt"
 
         if self.push:
-            # git('add', entry_name)
-            # git('commit', '-m', timestamp + ' make update to daily entry')
-            # git('push')
+            git('add', entry_name)
+            git('commit', '-m', timestamp + ' make update to daily entry')
+            git('push')
             display_push_progress()
 
 if __name__ == "__main__":
