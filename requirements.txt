@@ -1,6 +1,4 @@
 questionary
-datetime
-os
 pyyaml
 pyfiglet
 plumbum
